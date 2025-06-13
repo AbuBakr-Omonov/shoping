@@ -1,31 +1,53 @@
 import axios from 'axios';
 import { BadgeCheck, CalendarDays, Fingerprint, Mail, ShieldCheck, UserCircle, UserCog } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
+
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
 
 
   useEffect(() => {
+    (async () => {
 
-    axios.get("https://nt-shopping-list.onrender.com/api/auth", {
-      headers: {
-        "x-auth-token": `${localStorage.getItem("token")}`,
-      }
-    })
-
-      .then((res) => {
-        setUser(res.data)
+      let { data } = await axios.get("https://nt-shopping-list.onrender.com/api/auth", {
+        headers: {
+          "x-auth-token": `${localStorage.getItem("token")}`,
+        }
       })
+      setUser(data)
+      console.log(data);
 
-      .catch((error) => {
-        console.error(error);
-      });
+      // .then((res) => {
+      //   setUser(res.data)
+      // })
+
+      // .catch((error) => {
+      //   console.error(error);
+      // });
+    })()
 
   }, [])
-  
 
+
+  const onDelete = async () => {
+
+    let res = await axios.delete("https://nt-shopping-list.onrender.com/api/users", {
+      headers: {
+        "x-auth-token": `${localStorage.getItem("token")}`
+      }
+
+    })
+    if (res.status === 200) {
+      localStorage.removeItem("token")
+        navigate("/register");
+    }
+    console.log(res);
+
+  }
 
   return (
     <div className="max-w-4xl mx-auto mt-16 bg-white border border-gray-200 shadow-md rounded-xl overflow-hidden">
@@ -37,7 +59,7 @@ const Profile = () => {
             <p className="text-sm text-gray-500">@{user?.username}</p>
           </div>
         </div>
-        <button   className="mt-4 sm:mt-0 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 cursor-pointer transition">
+        <button onClick={onDelete} className="mt-4 sm:mt-0 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 cursor-pointer transition">
           delate
         </button>
       </div>
