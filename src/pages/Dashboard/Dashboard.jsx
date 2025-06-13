@@ -5,6 +5,9 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { User, Users } from 'lucide-react';
 import GroupCreate from './group/groupCreate/GroupCreate';
 import axios from 'axios';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -16,18 +19,16 @@ const Dashboard = () => {
             return navigate("/login");
         }
     };
-    useEffect(()=>{
-        (async () => {
-        let { data } = await axios.get("https://nt-shopping-list.onrender.com/api/groups", {
+    useEffect(() => {
+        axios.get("https://nt-shopping-list.onrender.com/api/groups", {
             headers: {
                 "x-auth-token": localStorage.getItem("token")
             }
+        }).then((res) => {
+            console.log(res.data);
+            setGroups(res.data)
         })
-        console.log(data);
-        setGroups(data)
-
-    })()
-    },[])
+    }, [])
 
 
     return (
@@ -41,16 +42,27 @@ const Dashboard = () => {
                         <NavLink to="" end className="sidebar-link flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700">
                             <User className="w-4 h-4" /> Profile
                         </NavLink>
-                        <NavLink className="sidebar-link flex  items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700">
-                            <Users className="w-4 h-4" /> Groups <ChevronLeft size={24}/>
-                        </NavLink>
+                        <Popover>
+                            <PopoverTrigger className="w-full">
+                                <Button className="w-full">Create</Button>
+                            </PopoverTrigger>
+                            <PopoverContent >
+                                <div className='flex flex-col gap-5 mb-5'>
+                                    <Input />
+                                    <Input />
+                                </div>
+                                <div className='flex gap-5'>
+                                    <Button  className={"w-[120px] bg-blue-500  hover:bg-white hover:border border-blue-600 hover:text-blue-600"}>create</Button>
+                                    <Button  className={"w-[120px]  bg-blue-500 hover:bg-white hover:border border-blue-600 hover:text-blue-600"}>cancel</Button>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
 
                         {
-                            groups.map((val) => (
-                                <Link className='flex flex-col' key={val.id} to={`groups/${val._id}`}>{val.name}</Link>
+                            groups.map((item) => (
+                                <Link className='flex flex-col' key={item._id} to={`groups/${item._id}`}>{item.name}</Link>
                             ))
                         }
-
                     </nav>
                 </aside>
                 <div className="flex-1 flex flex-col">
