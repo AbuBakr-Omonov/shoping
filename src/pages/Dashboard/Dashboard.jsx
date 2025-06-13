@@ -1,11 +1,14 @@
-import { LogOut } from 'lucide-react'
-import React from 'react'
+import { ChevronLeft, LogOut } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 import "./style.css"
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { User, Users } from 'lucide-react';
+import GroupCreate from './group/groupCreate/GroupCreate';
+import axios from 'axios';
 
 const Dashboard = () => {
-      const navigate = useNavigate();
+    const navigate = useNavigate();
+    const [groups, setGroups] = useState([])
 
     const logOut = () => {
         localStorage.removeItem("token");
@@ -13,6 +16,20 @@ const Dashboard = () => {
             return navigate("/login");
         }
     };
+    useEffect(()=>{
+        (async () => {
+        let { data } = await axios.get("https://nt-shopping-list.onrender.com/api/groups", {
+            headers: {
+                "x-auth-token": localStorage.getItem("token")
+            }
+        })
+        console.log(data);
+        setGroups(data)
+
+    })()
+    },[])
+
+
     return (
         <div>
             <div className="flex min-h-screen bg-[#EDF1F5] text-gray-800">
@@ -24,9 +41,16 @@ const Dashboard = () => {
                         <NavLink to="" end className="sidebar-link flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700">
                             <User className="w-4 h-4" /> Profile
                         </NavLink>
-                        <NavLink to="/group" className="sidebar-link flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700">
-                            <Users className="w-4 h-4" /> Groups
+                        <NavLink className="sidebar-link flex  items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700">
+                            <Users className="w-4 h-4" /> Groups <ChevronLeft size={24}/>
                         </NavLink>
+
+                        {
+                            groups.map((val) => (
+                                <Link className='flex flex-col' key={val.id} to={`groups/${val._id}`}>{val.name}</Link>
+                            ))
+                        }
+
                     </nav>
                 </aside>
                 <div className="flex-1 flex flex-col">
