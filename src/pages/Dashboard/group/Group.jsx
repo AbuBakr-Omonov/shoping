@@ -13,7 +13,7 @@ useEffect(() => {
   }).then(res => {
     setGroup(res.data.filter(group => group?._id === groupId)[0])
   })
-}, [])
+}, [groupId])
   return (
       <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Group Details</h2>

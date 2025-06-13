@@ -31,6 +31,21 @@ const Dashboard = () => {
     }, [])
 
 
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        const newGroup = {
+            name: e.target[0].value,
+            password: e.target[1].value
+        }
+        console.log(newGroup)
+       axios.post("https://nt-shopping-list.onrender.com/api/groups", newGroup, {
+            headers: {
+                "x-auth-token": localStorage.getItem("token")
+            }
+        }).then(res => console.log(res.data))
+    }
+
+
     return (
         <div>
             <div className="flex min-h-screen bg-[#EDF1F5] text-gray-800">
@@ -47,14 +62,13 @@ const Dashboard = () => {
                                 <Button className="w-full">Create</Button>
                             </PopoverTrigger>
                             <PopoverContent >
-                                <div className='flex flex-col gap-5 mb-5'>
-                                    <Input />
-                                    <Input />
-                                </div>
-                                <div className='flex gap-5'>
-                                    <Button  className={"w-[120px] bg-blue-500  hover:bg-white hover:border border-blue-600 hover:text-blue-600"}>create</Button>
-                                    <Button  className={"w-[120px]  bg-blue-500 hover:bg-white hover:border border-blue-600 hover:text-blue-600"}>cancel</Button>
-                                </div>
+                                <form onSubmit={handleSubmit}>
+                                    <div className='flex flex-col gap-5 mb-5'>
+                                        <Input />
+                                        <Input type="password" />
+                                    </div>
+                                        <Button  className={"w-full bg-blue-500  hover:bg-white hover:border border-blue-600 hover:text-blue-600"}>create</Button>
+                                </form>
                             </PopoverContent>
                         </Popover>
 
